@@ -80,7 +80,7 @@ def filter_datum(fields: List[str],
 
 def get_logger() -> logging.Logger:
     """
-    - Create a get_logger function that takes no arguments and returns a 
+    - Create a get_logger function that takes no arguments and returns a
         logging.Logger object.
     - The logger should be named "user_data" and only log up to logging.INFO
         level. It should not propagate messages to other loggers. It should
@@ -98,6 +98,27 @@ def get_logger() -> logging.Logger:
 
 def get_db() -> mysql.connector.connection.MySQLConnection:
     """
+    Connect to the MySQL database using credentials from environment variables.
+
+    Returns:
+    - mysql.connector.connection.MySQLConnection: A connection to the MySQL
+        database.
     """
-    return mysql.connector.connect(
-        host="localhost
+    # Get database credentials from environment variables
+    username = os.getenv('PERSONAL_DATA_DB_USERNAME', 'root')
+    password = os.getenv('PERSONAL_DATA_DB_PASSWORD', '')
+    host = os.getenv('PERSONAL_DATA_DB_HOST', 'localhost')
+    dbname = os.getenv('PERSONAL_DATA_DB_NAME')
+
+    # Connect to the database
+    try:
+        connection = mysql.connector.connect(
+            user=username,
+            password=password,
+            host=host,
+            database=dbname
+        )
+        return connection
+    except mysql.connector.Error as e:
+        print(f"Error connecting to the database: {e}")
+        return None
