@@ -141,3 +141,7 @@ def main():
         logger.info(message)
     cursor.close()
     db.close()
+
+
+if __name__ == "__main__":
+    main()
