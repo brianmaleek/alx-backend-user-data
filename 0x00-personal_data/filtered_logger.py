@@ -5,6 +5,8 @@
 
 import re
 import logging
+import mysql.connector
+import os
 from typing import List
 
 
@@ -78,6 +80,11 @@ def filter_datum(fields: List[str],
 
 def get_logger() -> logging.Logger:
     """
+    - Create a get_logger function that takes no arguments and returns a 
+        logging.Logger object.
+    - The logger should be named "user_data" and only log up to logging.INFO
+        level. It should not propagate messages to other loggers. It should
+        have a StreamHandler with RedactingFormatter as formatter.
     """
     logger = logging.getLogger("user_data")
     logger.setLevel(logging.INFO)
@@ -87,3 +94,10 @@ def get_logger() -> logging.Logger:
     stream.setFormatter(formatter)
     logger.addHandler(stream)
     return logger
+
+
+def get_db() -> mysql.connector.connection.MySQLConnection:
+    """
+    """
+    return mysql.connector.connect(
+        host="localhost
