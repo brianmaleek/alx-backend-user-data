@@ -8,6 +8,16 @@ import logging
 from typing import List
 
 
+"""
+- Create a tuple PII_FIELDS constant at the root of the module containing the
+    fields from user_data.csv that are considered PII.
+- PII_FIELDS can only contain 5 fields - choose the right list of fields that
+    are considered as “important” PIIs or information that you must hide in
+    your logs. Use it to parameterize the formatter.
+"""
+PII_FIELDS = ('name', 'email', 'phone', 'ssn', 'password')
+
+
 class RedactingFormatter(logging.Formatter):
     """
     Redacting Formatter class
@@ -64,3 +74,16 @@ def filter_datum(fields: List[str],
         message = re.sub(fr'{re.escape(field)}=.+?{re.escape(separator)}',
                          f'{field}={redaction}{separator}', message)
     return message
+
+
+def get_logger() -> logging.Logger:
+    """
+    """
+    logger = logging.getLogger("user_data")
+    logger.setLevel(logging.INFO)
+    logger.propagate = False
+    stream = logging.StreamHandler()
+    formatter = RedactingFormatter(list(PII_FIELDS))
+    stream.setFormatter(formatter)
+    logger.addHandler(stream)
+    return logger
