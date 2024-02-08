@@ -84,7 +84,7 @@ def get_logger() -> logging.Logger:
         logging.Logger object.
     - The logger should be named "user_data" and only log up to logging.INFO
         level. It should not propagate messages to other loggers. It should
-        have a StreamHandler with RedactingFormatter as formatter.
+        have a StreamHandler with RedactingFormatter as formatter..
     """
     logger = logging.getLogger("user_data")
     logger.setLevel(logging.INFO)
