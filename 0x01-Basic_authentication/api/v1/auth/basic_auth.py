@@ -3,6 +3,7 @@
 BasicAuth that inherits from Auth
 """
 from api.v1.auth.auth import Auth
+from typing import TypeVar
 import base64
 
 
@@ -52,3 +53,24 @@ class BasicAuth(Auth):
             return decoded_str
         except Exception as e:
             return None
+
+    def extract_user_credentials(
+                self, decoded_base64_authorization_header: str) -> (str, str):
+        """
+        Extracts the user credentials from a decoded Base64 string.
+
+        Args:
+            decoded_base64_authorization_header (str): The decoded
+                Base64 string.
+
+        Returns:
+            (str, str): A tuple with the user email and password.
+        """
+        if decoded_base64_authorization_header is None or not isinstance(
+                    decoded_base64_authorization_header, str) or \
+                ':' not in decoded_base64_authorization_header:
+            return (None, None)
+
+        user_email, user_password = decoded_base64_authorization_header.\
+            split(':', 1)
+        return (user_email, user_password)
