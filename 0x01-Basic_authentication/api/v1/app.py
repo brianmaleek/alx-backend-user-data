@@ -16,7 +16,7 @@ CORS(app, resources={r"/api/v1/*": {"origins": "*"}})
 auth = None
 auth_type = os.getenv("AUTH_TYPE")
 
-if auth_type:
+if auth_type == "auth":
     from api.v1.auth.auth import Auth
 
     auth = Auth()
