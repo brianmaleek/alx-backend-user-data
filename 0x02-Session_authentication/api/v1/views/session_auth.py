@@ -8,7 +8,7 @@ from os import getenv
 
 
 @app_views.route('/auth_session/login', methods=['POST'], strict_slashes=False)
-def login():
+def session_login():
     """
     Handle user login and session creation.
 
@@ -20,26 +20,26 @@ def login():
         Flask.Response: A JSON response containing the user data if login is
         successful, along with a session cookie containing the session ID.
     """
-    email = request.form.get("email")
-    password = request.form.get("password")
+    user_email = request.form.get("email")
+    user_password = request.form.get("password")
 
     # Check if email and password are provided
-    if email is None:
+    if user_email is None or user_email == "":
         return jsonify({"error": "email missing"}), 400
-    if password is None:
+    if user_password is None or user_password == "":
         return jsonify({"error": "password missing"}), 400
 
     # Retrieve user by email
-    user = User.search({"email": email})
-    if user is None:
+    is_valid_user = User.search({"email": user_email})
+    if not is_valid_user:
         return jsonify({"error": "no user found for this email"}), 404
 
     # Check if password is valid
-    if not user.is_valid_password(password):
+    if not is_valid_user.is_valid_password(user_password):
         return jsonify({"error": "wrong password"}), 401
 
     from api.v1.app import auth
-    session_id = auth.create_session(user.id)
-    response = jsonify(user.to_json())
-    response.set_cookie(getenv("SESSION_NAME"), session_id)
-    return response
+    session_id = auth.create_session(is_valid_user.id)
+    response_data = getenv(("SESSION_NAME"), session_id)
+    response_dict = jsonify(is_valid_user.to_dict())
+    return response_dict.set_cookie(response_data, session_id)
