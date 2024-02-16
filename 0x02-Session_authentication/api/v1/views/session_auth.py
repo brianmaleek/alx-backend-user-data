@@ -82,7 +82,4 @@ def session_logout():
     # Create empty response
     response = make_response(jsonify({}), 200)
 
-    # Clear session cookie
-    response.set_cookie(session_name, "", expires=0)
-
     return response
