@@ -68,15 +68,8 @@ def session_logout():
         Flask.Response: An empty JSON response with a cleared session cookie.
     """
     from api.v1.app import auth
-
-    # Retrieve session name from environment variable or use a default value
-    session_name = getenv("SESSION_NAME", "_my_session_id")
-
-    # Get session cookie
-    session_id = request.cookies.get(session_name)
-
     # Check if session ID is valid
-    if not auth.destroy_session(session_id):
+    if not auth.destroy_session(request):
         abort(404)
 
     # Create empty response
