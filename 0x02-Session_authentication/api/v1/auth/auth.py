@@ -4,6 +4,7 @@ Class manages the API authentication
 """
 from flask import request
 from typing import List, TypeVar
+import os
 
 
 class Auth:
@@ -64,3 +65,21 @@ class Auth:
             - TypeVar('User'): The current user object.
         """
         return None
+
+    def session_cookie(self, request=None):
+        """
+        Retrieves the session cookie from the request.
+
+        Args:
+            - request (flask.Request, optional): The Flask request object
+                Defaults to None.
+
+        Returns:
+            - The value of the cookie named SESSION_NAME from request cookies.
+                Returns None if request is None.
+        """
+        if request is None:
+            return None
+
+        session_name = os.getenv("SESSION_NAME", "_my_session_id")
+        return request.cookies.get(session_name)
