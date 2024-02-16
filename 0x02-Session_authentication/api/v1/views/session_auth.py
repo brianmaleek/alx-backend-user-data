@@ -52,3 +52,37 @@ def session_login():
     response.set_cookie(session_name, session_id)
 
     return response
+
+
+@app_views.route('/auth_session/logout',
+                 methods=['DELETE'], strict_slashes=False)
+def session_logout():
+    """
+    Handle user logout and session deletion.
+
+    This route handles the user logout process by deleting the session ID
+    associated with the user. It also clears the session cookie from the
+    response.
+
+    Returns:
+        Flask.Response: An empty JSON response with a cleared session cookie.
+    """
+    from api.v1.app import auth
+
+    # Retrieve session name from environment variable or use a default value
+    session_name = getenv("SESSION_NAME", "_my_session_id")
+
+    # Get session cookie
+    session_id = request.cookies.get(session_name)
+
+    # Check if session ID is valid
+    if not auth.destroy_session(session_id):
+        abort(404)
+
+    # Create empty response
+    response = make_response(jsonify({}), 200)
+
+    # Clear session cookie
+    response.set_cookie(session_name, "", expires=0)
+
+    return response
