@@ -52,7 +52,7 @@ def before_request() -> None:
                 abort(401)
             # Assign current user
             request.current_user = auth.current_user(request)
-            if not request.current_user:
+            if request.current_user is None:
                 abort(403)
 
 
