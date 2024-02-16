@@ -4,7 +4,9 @@ Module of SessionAuth class
 """
 
 
+from typing import TypeVar
 from api.v1.auth.auth import Auth
+from models.user import User
 import uuid
 
 
@@ -55,3 +57,26 @@ class SessionAuth(Auth):
         if session_id is None or type(session_id) is not str:
             return None
         return self.user_id_by_session_id.get(session_id)
+
+    def current_user(self, request=None):
+        """
+        Retrieve the current user based on the session cookie.
+
+        Args:
+            request (flask.Request, optional): The Flask request object.
+                Defaults to None.
+
+        Returns:
+            User: The current user instance if found, otherwise None.
+        """
+        if request is None:
+            return None
+
+        session_cookie = self.session_cookie(request)
+        if session_cookie:
+            user_id = self.user_id_for_session_id(session_cookie)
+            if user_id:
+                # Return the User instance based on user_id
+                return User.get(user_id)
+
+        return None
