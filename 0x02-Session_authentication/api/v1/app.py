@@ -28,22 +28,23 @@ elif auth_type == "basic_auth":
 
 
 @app.before_request
-def before_request():
+def before_request() -> None:
     """
-    handler before_request
+    Before request handler
     """
-    authorized_list = ['/api/v1/status/',
-                       '/api/v1/unauthorized/', '/api/v1/forbidden/',
-                       '/api/v1/auth_session/login/']
-
-    if auth and auth.require_auth(request.path, authorized_list):
-        if not auth.authorization_header(request):
-            abort(401)
-        if (auth.authorization_header(request)):
-            abort(401)
-        request.current_user = auth.current_user(request)
-        if not auth.current_user(request):
-            abort(403)
+    if auth is None:
+        return
+    excluded_paths = [
+        "/api/v1/status/", "/api/v1/unauthorized/", "/api/v1/forbidden/"
+        ]
+    if request.path not in excluded_paths:
+        if auth.require_auth(request.path, excluded_paths):
+            if not auth.authorization_header(request):
+                abort(401)
+            # Assign current user
+            request.current_user = auth.current_user(request)
+            if not request.current_user:
+                abort(403)
 
 
 @app.errorhandler(404)
