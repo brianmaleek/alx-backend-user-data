@@ -6,6 +6,8 @@ from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm.session import Session
+from sqlalchemy.orm.exc import NoResultFound
+from sqlalchemy.exc import InvalidRequestError
 
 from user import Base, User
 
@@ -17,7 +19,7 @@ class DB:
     def __init__(self) -> None:
         """Initialize a new DB instance
         """
-        self._engine = create_engine("sqlite:///a.db", echo=True)
+        self._engine = create_engine("sqlite:///a.db", echo=False)
         Base.metadata.drop_all(self._engine)
         Base.metadata.create_all(self._engine)
         self.__session = None
@@ -41,7 +43,30 @@ class DB:
         Returns:
             User: The newly created User object.
         """
+        if not email or not hashed_password:
+            return
         new_user = User(email=email, hashed_password=hashed_password)
         self._session.add(new_user)
         self._session.commit()
         return new_user
+
+    def find_user_by(self, **kwargs) -> User:
+        """Find a user in the database based on input arguments.
+
+        Args:
+            **kwargs: Arbitrary keyword arguments for filtering the query.
+
+        Returns:
+            User: The first user found matching the query.
+
+        Raises:
+            NoResultFound: If no user is found matching the query.
+            InvalidRequestError: If invalid query arguments are passed.
+        """
+        if not kwargs:
+            raise InvalidRequestError
+
+        find_user = self._session.query(User).filter_by(**kwargs).one()
+        if not find_user:
+            raise NoResultFound
+        return find_user
